@@ -15,27 +15,44 @@
 			relTypeCode : 'article',
 			ajaxMode : 'Y'
 		}, function(data) {
-			var reply = "";
+			var replyContent = "";
 			if(data.data1.length < 1){
-				addReplies += "댓글이 존재 하지 않습니다.";
+				replyContent += "댓글이 존재 하지 않습니다.";
 			}
 			$(data.data1).each(function(){
 				var loginedMemberId = ${rq.loginedMemberId};
 				var replyMemberId= this.memberId;
-				reply += '<div><span>';
-				reply += this.extra__replyWriter +'</span></div>';
-				reply += '<div class="bg-base-300 rounded-box "><span class="mx-8">';				
-				reply += this.body+'</span></div>';				
+				
+ 				replyContent += '<div id=reply'+this.id+'>';
+				replyContent += '<div><span>';
+				replyContent += this.extra__replyWriter +'</span></div>';
+				replyContent += '<div class="bg-base-300 rounded-box "><span class="mx-8">';				
+				replyContent += this.body+'</span></div>';				
 			
  				if(loginedMemberId == replyMemberId){
- 					reply +='<button class="bg-red-500">수정</button>';
- 					reply +='<button class="bg-red-500">삭제</button>';
+ 					replyContent +='<button class="btn" onclick="replaceModifyForm('+this.id+')">수정</button>';
+ 					replyContent +='<button class="btn">삭제</button>';
 				}
+ 				replyContent += '</div>';
+ 				replyContent+='<div class="divider"></div>';
 			});
-			$('.replyList').html(reply);
-		}, 'json');			
+			
+			$('.replyList').empty();
+			$('.replyList').html(replyContent);
+		}, 'json');	
+	}	
+	//댓글 수정 폼
+	function replaceModifyForm(id){
+		var modifyFormContent ="변경좀...";
+// 		modifyFormContent += '<form action="">';
+// 		modifyFormContent += '<div><span>';
+// 		modifyFormContent +=  writer +'</span></div>';
+// 		modifyFormContent += '</form>';
+		
+		$('#reply'+id).replaceWith(modifyFormContent);
 	}
-	//댓글 관련
+	
+	//댓글 중복 발송 방지, 빈 내용 전송 방지
 	var replyWrite__submitDone = false;
 	
 	function ReplyWrite__submitForm(form){
@@ -52,7 +69,7 @@
 		replyWrite__submitDone = true;
 		form.submit();		
 	}
-	
+	//댓글 작성
 	function Reply__Write() {				
 		$.get('../reply/doWrite', {
 			relId : params.id,
@@ -183,7 +200,7 @@
 		<div class="container mx-auto px-3">
 		<h2>댓글 리스트</h2>
 		<div class="replyList">
-<!-- 		ajax로 리스팅 -->
+	<!-- 		ajax로 리스팅 -->
 		
 		</div>
 		</div>
@@ -226,3 +243,5 @@
 		</div>
 	</section>
 <%@ include file="../common/foot.jspf" %>
+
+
