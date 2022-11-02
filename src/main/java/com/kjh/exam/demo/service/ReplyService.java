@@ -6,25 +6,38 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kjh.exam.demo.repository.ReplyRepository;
+import com.kjh.exam.demo.util.Ut;
 import com.kjh.exam.demo.vo.Reply;
 import com.kjh.exam.demo.vo.ResultData;
-
 @Service
 public class ReplyService {
+	
 	@Autowired
 	private ReplyRepository replyRepository;
-
-	public List<Reply> getReplyList(String relTypeCode, int relId) {
-
-		return replyRepository.getReplyList(relTypeCode, relId);
-	}
-
+	
 	public ResultData writeReply(int actorId, String relTypeCode, int relId, String body) {
-		if (actorId == -1) {
-			return ResultData.from("F-1", "로그인 후 이용가능합니다.");
-		}
-		replyRepository.writeReply(actorId, relTypeCode, relId, body);
-		int replyId = replyRepository.getLastInsertId();
-		return ResultData.from("S-1", "댓글 달기 성공","replyId",replyId );
+		
+		replyRepository.writeReply(actorId,relTypeCode, relId, body);
+		
+		int id = replyRepository.getLastInsertId();
+		
+		return ResultData.from("S-1", Ut.f("%d번 댓글이 등록되었습니다", id), "id", id);
 	}
+
+	public List<Reply> getForPrintReplies(String relTypeCode, int relId) {
+	
+		return replyRepository.getForPrintReplies(relTypeCode,relId);
+	}
+
+	public ResultData modifyReply(int replyId, String body) {
+		
+		replyRepository.modifyReply(replyId,body);
+		return ResultData.from("S-1", Ut.f("%d번 댓글 수정", replyId));
+	}
+
+	public Reply getReplyById(int replyId) {
+		
+		return replyRepository.getReplyById(replyId);
+	}
+
 }
